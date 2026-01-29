@@ -886,6 +886,35 @@
   box-sizing: border-box;
 }
 
+/* Responsive: smaller padding on narrow viewports */
+@media (max-width: 640px) {
+  .resume-flow {
+    padding: 4mm;
+  }
+}
+
+/* Tools preview containers: prevent overflow on small screens */
+.tools-preview-container {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Resume preview on small viewports */
+@media (max-width: 768px) {
+  #resume-preview {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .no-print-preview-wrapper {
+    min-width: 0;
+    overflow-x: auto;
+  }
+}
+
 /* A4 Page Container */
 /* A4 dimensions: 210mm × 297mm */
 /* At 96 DPI: 210mm ≈ 794px, 297mm ≈ 1123px */

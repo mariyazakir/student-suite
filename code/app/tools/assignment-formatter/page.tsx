@@ -549,8 +549,19 @@ export default function AssignmentFormatterPage() {
   };
 
   const applyFormat = (command: string, value?: string) => {
+    const editor = editorRef.current;
+    if (editor) {
+      editor.focus();
+      restoreCursorPosition();
+    }
     document.execCommand(command, false, value);
     handleEditorInput();
+  };
+
+  const saveSelectionBeforeFormat = () => {
+    if (document.activeElement === editorRef.current) {
+      saveCursorPosition();
+    }
   };
 
   const paginateContent = () => {
@@ -1436,7 +1447,7 @@ export default function AssignmentFormatterPage() {
   };
 
   return (
-    <section className="min-h-screen bg-gray-50 px-4 py-6 pb-24 dark:bg-slate-950 md:pb-6 overflow-x-hidden">
+    <section className="min-h-screen bg-gray-50 px-3 sm:px-4 py-4 sm:py-6 pb-24 dark:bg-slate-950 md:pb-6 overflow-x-hidden max-w-full">
       <style>{`
         .assignment-editor p,
         .assignment-preview-content p {
@@ -1534,7 +1545,7 @@ export default function AssignmentFormatterPage() {
 
       <div
         ref={splitWrapRef}
-        className="mx-auto flex w-full max-w-6xl flex-col gap-6 md:flex-row"
+        className="mx-auto flex w-full max-w-6xl flex-col gap-4 sm:gap-6 md:flex-row min-w-0"
       >
         <aside
           className={`assignment-editor-panel w-full md:flex-none ${
@@ -2090,6 +2101,10 @@ export default function AssignmentFormatterPage() {
                   </button>
                   <button
                     type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      saveSelectionBeforeFormat();
+                    }}
                     onClick={() => applyFormat('bold')}
                     className="rounded-md border border-gray-200 bg-gray-50 px-3 py-1 text-sm font-medium text-gray-800 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     aria-label="Bold"
@@ -2099,6 +2114,10 @@ export default function AssignmentFormatterPage() {
                   </button>
                   <button
                     type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      saveSelectionBeforeFormat();
+                    }}
                     onClick={() => applyFormat('italic')}
                     className="rounded-md border border-gray-200 bg-gray-50 px-3 py-1 text-sm font-medium text-gray-800 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     aria-label="Italic"
@@ -2108,6 +2127,10 @@ export default function AssignmentFormatterPage() {
                   </button>
                   <button
                     type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      saveSelectionBeforeFormat();
+                    }}
                     onClick={() => applyFormat('underline')}
                     className="rounded-md border border-gray-200 bg-gray-50 px-3 py-1 text-sm font-medium text-gray-800 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     aria-label="Underline"
@@ -2117,6 +2140,10 @@ export default function AssignmentFormatterPage() {
                   </button>
                   <button
                     type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      saveSelectionBeforeFormat();
+                    }}
                     onClick={() => applyFormat('formatBlock', 'p')}
                     className="rounded-md border border-gray-200 bg-gray-50 px-3 py-1 text-sm font-medium text-gray-800 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     aria-label="Paragraph style"
@@ -2126,6 +2153,10 @@ export default function AssignmentFormatterPage() {
                   </button>
                   <button
                     type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      saveSelectionBeforeFormat();
+                    }}
                     onClick={() => applyFormat('formatBlock', 'h3')}
                     className="rounded-md border border-gray-200 bg-gray-50 px-3 py-1 text-sm font-medium text-gray-800 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     aria-label="Heading style"
@@ -2267,11 +2298,11 @@ export default function AssignmentFormatterPage() {
         </div>
 
         <section
-          className={`assignment-preview-panel w-full md:flex-1 ${
+          className={`assignment-preview-panel w-full min-w-0 md:flex-1 ${
             activePanel === 'preview' ? 'block' : 'hidden md:block'
           }`}
         >
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+          <div className="rounded-xl border border-gray-200 bg-white p-3 sm:p-4 shadow-sm transition-shadow hover:shadow-md dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
               Write in Preview
             </h2>
@@ -2280,7 +2311,7 @@ export default function AssignmentFormatterPage() {
                 previewWrapRef.current = node;
                 exportRef.current = node;
               }}
-              className="mt-4 flex flex-col items-center gap-6"
+              className="mt-4 flex flex-col items-center gap-6 max-w-full overflow-x-auto overflow-y-auto tools-preview-container"
             >
               {includeCover && (
                 <div

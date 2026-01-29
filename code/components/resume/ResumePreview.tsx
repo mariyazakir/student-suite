@@ -155,7 +155,7 @@ export default function ResumePreview({
     <div
       id="resume-preview"
       ref={previewRef}
-      className="bg-gray-50 min-h-full print-resume-container"
+      className="bg-gray-50 min-h-full min-w-0 max-w-full overflow-x-auto overflow-y-visible print-resume-container"
     >
       {!hasContent && (
         <div className="no-print flex items-center justify-center py-2 text-gray-600">

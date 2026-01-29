@@ -819,7 +819,7 @@ export default function BuilderPage() {
               </nav>
               
               {/* Preview */}
-              <div className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-8 no-print-preview-wrapper">
+              <div className="flex-1 min-w-0 overflow-y-auto overflow-x-auto p-2 sm:p-4 md:p-6 lg:p-8 no-print-preview-wrapper">
                 <ResumePreview 
                   data={resumeData} 
                   template={selectedTemplate}

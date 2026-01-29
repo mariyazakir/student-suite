@@ -5,13 +5,20 @@
  * Wraps all pages with global styles and metadata.
  */
 
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import AppShell from '@/components/layout/AppShell';
 
 export const metadata: Metadata = {
   title: 'Resume Builder - AI-Powered ATS Optimization',
   description: 'Build ATS-optimized resumes with AI assistance',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover', /* safe area for notched devices */
 };
 
 export default function RootLayout({

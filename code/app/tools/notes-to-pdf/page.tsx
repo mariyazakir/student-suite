@@ -893,17 +893,14 @@ export default function NotesToPdfPage() {
           markers.push({ start: match.index ?? 0, end: (match.index ?? 0) + match[0].length, type: 'italic' });
         }
         markers.sort((a, b) => a.start - b.start);
-        const stripMarkers = (text: string, marker: { start: number; end: number }) => {
-          const inside = text.slice(marker.start + 1, marker.end - 1);
-          return { text: inside, start: marker.start, end: marker.end };
-        };
         markers.forEach((marker) => {
           if (marker.start > cursor) {
             fragments.push({ text: content.slice(cursor, marker.start) });
           }
-          const stripped = stripMarkers(content.slice(marker.start, marker.end), marker);
+          const matched = content.slice(marker.start, marker.end);
+          const insideText = matched.length >= 2 ? matched.slice(1, -1) : matched;
           fragments.push({
-            text: stripped.text,
+            text: insideText,
             bold: marker.type === 'bold',
             italic: marker.type === 'italic',
           });
@@ -929,7 +926,7 @@ export default function NotesToPdfPage() {
   const toggleInline = (marker: '*' | '_') => {
     const editor = pageEditorRefs.current[activePageId];
     if (!editor) return;
-    const fullText = editor.value;
+    const fullText = (activePage?.content ?? editor.value) || '';
     const start = editor.selectionStart ?? 0;
     const end = editor.selectionEnd ?? start;
     let finalStart = start;
@@ -963,7 +960,8 @@ export default function NotesToPdfPage() {
     const editor = pageEditorRefs.current[activePageId];
     if (!editor) return;
     const caret = editor.selectionStart ?? 0;
-    const lines = editor.value.split('\n');
+    const contentFromState = (activePage?.content ?? '') || '';
+    const lines = contentFromState.split('\n');
     let acc = 0;
     let idx = 0;
     for (let i = 0; i < lines.length; i++) {
@@ -1494,8 +1492,8 @@ export default function NotesToPdfPage() {
   };
 
   return (
-    <div className="w-full">
-      <section className="mx-auto flex w-full max-w-6xl flex-col gap-4 rounded-2xl border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden">
+      <section className="mx-auto flex w-full max-w-6xl flex-col gap-4 rounded-2xl border border-gray-200 bg-white/80 p-3 sm:p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/70 min-w-0">
         <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
@@ -1512,9 +1510,9 @@ export default function NotesToPdfPage() {
           </div>
         </header>
 
-        <div ref={panelsRef} className="flex flex-col gap-4 lg:flex-row">
+        <div ref={panelsRef} className="flex flex-col gap-4 lg:flex-row min-w-0">
           <aside
-            className="w-full lg:flex-shrink-0"
+            className="w-full min-w-0 lg:flex-shrink-0"
             style={isDesktop ? { width: `${leftPanelWidth}%` } : undefined}
           >
             <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -1870,12 +1868,15 @@ export default function NotesToPdfPage() {
             </svg>
           </div>
 
-          <main className="flex-1 min-w-0">
-            <div className="flex h-full flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex-1 overflow-auto px-2 pb-4">
+          <main className="flex-1 min-w-0 overflow-hidden">
+            <div className="flex h-full flex-col gap-3 rounded-xl border border-gray-200 bg-white p-3 sm:p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 min-w-0">
+              <div 
+                className="flex-1 min-h-0 overflow-auto overflow-x-auto px-2 pb-4"
+                style={{ WebkitOverflowScrolling: 'touch' }}
+              >
                 <div
                   ref={exportRef}
-                  className="flex flex-col items-center gap-6 snap-y snap-mandatory"
+                  className="flex flex-col items-center gap-6 snap-y snap-mandatory min-w-0"
                 >
                   {activeProjectPages.map((page, index) => {
                     const isActive = page.id === activePageId;
@@ -1885,7 +1886,7 @@ export default function NotesToPdfPage() {
                     return (
                       <article
                         key={page.id}
-                        className="w-full max-w-[210mm] snap-start"
+                        className="w-full max-w-[210mm] min-w-0 snap-start flex-shrink-0"
                         aria-label={`Page ${index + 1}`}
                       >
                         <div

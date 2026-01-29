@@ -35,13 +35,13 @@ export default function ResponsiveLayout({
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('desktop');
   const [mobileTab, setMobileTab] = useState<MobileTab>('editor');
 
-  // Detect layout mode based on window size
+  // Detect layout mode based on window size (responsive for all devices)
   useEffect(() => {
     const updateLayoutMode = () => {
       const width = window.innerWidth;
       if (width >= 1024) {
         setLayoutMode('desktop');
-      } else if (width >= 768) {
+      } else if (width >= 640) {
         setLayoutMode('tablet');
       } else {
         setLayoutMode('mobile');
@@ -56,8 +56,8 @@ export default function ResponsiveLayout({
     
     // Use matchMedia for more accurate breakpoint detection
     const desktopQuery = window.matchMedia('(min-width: 1024px)');
-    const tabletQuery = window.matchMedia('(min-width: 768px) and (max-width: 1023px)');
-    const mobileQuery = window.matchMedia('(max-width: 767px)');
+    const tabletQuery = window.matchMedia('(min-width: 640px) and (max-width: 1023px)');
+    const mobileQuery = window.matchMedia('(max-width: 639px)');
 
     const handleDesktopChange = (e: MediaQueryListEvent) => {
       if (e.matches) setLayoutMode('desktop');
@@ -95,7 +95,7 @@ export default function ResponsiveLayout({
     );
   }
 
-  // Tablet (768px-1023px): Stacked layout (editor on top, preview below)
+  // Tablet (640px-1023px): Stacked layout (editor on top, preview below)
   if (layoutMode === 'tablet') {
     return (
       <TabletStackedLayout
@@ -105,7 +105,7 @@ export default function ResponsiveLayout({
     );
   }
 
-  // Mobile (<768px): Tab-based system with bottom navigation
+  // Mobile (<640px): Tab-based system with bottom navigation
   return (
     <MobileTabLayout
       leftPanel={leftPanel}
@@ -118,7 +118,7 @@ export default function ResponsiveLayout({
 }
 
 /**
- * Tablet Stacked Layout (768px-1023px)
+ * Tablet Stacked Layout (640px-1023px)
  * Editor on top, Preview below (stacked vertically)
  */
 function TabletStackedLayout({
@@ -126,13 +126,13 @@ function TabletStackedLayout({
   rightPanel,
 }: Pick<ResponsiveLayoutProps, 'leftPanel' | 'rightPanel'>) {
   return (
-    <div className="flex flex-col h-[calc(100vh-73px)] overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-73px)] min-h-0 overflow-hidden">
       {/* Editor Panel - Top */}
-      <div className="flex-1 overflow-y-auto bg-white border-b border-gray-200 min-h-0">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden bg-white border-b border-gray-200">
         {leftPanel}
       </div>
       {/* Preview Panel - Bottom */}
-      <div className="flex-1 overflow-y-auto bg-gray-50 min-h-0">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto bg-gray-50">
         {rightPanel}
       </div>
     </div>
@@ -221,10 +221,10 @@ function DesktopSplitLayout({
   return (
     <div
       ref={containerRef}
-      className="flex h-[calc(100vh-73px)] relative transition-all duration-300 overflow-hidden"
+      className="flex h-[calc(100vh-73px)] min-h-0 relative transition-all duration-300 overflow-hidden"
     >
       <div
-        className="overflow-y-auto bg-white transition-all duration-200 border-r border-gray-200"
+        className="min-w-0 overflow-y-auto overflow-x-hidden bg-white transition-all duration-200 border-r border-gray-200"
         style={{ width: `${leftWidth}%` }}
       >
         {leftPanel}
@@ -244,7 +244,7 @@ function DesktopSplitLayout({
       </div>
 
       <div
-        className="overflow-y-auto bg-gray-50 flex-1"
+        className="min-w-0 flex-1 overflow-y-auto overflow-x-auto bg-gray-50"
         style={{ width: `${100 - leftWidth}%` }}
       >
         {rightPanel}
@@ -284,8 +284,11 @@ function MobileTabLayout({
   return (
     <div 
       ref={containerRef}
-      className="flex flex-col h-[calc(100vh-65px)] md:h-[calc(100vh-73px)] pb-16 relative overflow-hidden"
-      style={{ perspective: '1000px' }}
+      className="flex flex-col h-[calc(100vh-65px)] md:h-[calc(100vh-73px)] relative overflow-hidden min-h-0"
+      style={{ 
+        perspective: '1000px',
+        paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))',
+      }}
     >
       {/* Tab Content with Page Turn Effect */}
       <div className="flex-1 relative min-h-0" style={{ transformStyle: 'preserve-3d' }}>
@@ -318,7 +321,7 @@ function MobileTabLayout({
             backfaceVisibility: 'hidden',
           }}
         >
-          <div className="bg-gray-50 min-h-full h-full overflow-y-auto relative shadow-lg">
+          <div className="bg-gray-50 min-h-full h-full min-w-0 overflow-y-auto overflow-x-auto relative shadow-lg">
             {/* Back Button - Only visible in Preview */}
             {activeTab === 'preview' && (
               <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
@@ -356,9 +359,12 @@ function MobileTabLayout({
         </div>
       </div>
 
-      {/* Bottom Navigation Bar - Fixed to bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg md:hidden">
-        <div className="flex items-center justify-around min-h-[64px] h-auto py-2 px-2 safe-area-inset-bottom">
+      {/* Bottom Navigation Bar - Fixed to bottom, safe area for notched devices */}
+      <div 
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg md:hidden"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0)' }}
+      >
+        <div className="flex items-center justify-around min-h-[64px] h-auto py-2 px-2">
           {/* Editor Tab */}
           <button
             onClick={() => handleTabClick('editor')}
