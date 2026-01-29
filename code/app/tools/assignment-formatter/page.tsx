@@ -1411,6 +1411,7 @@ export default function AssignmentFormatterPage() {
         pageSelector: '[data-export-page]',
         filename: getExportFilename(),
         format: imageFormat,
+        pageSize: PAGE_SIZES_MM[pageSize],
         debug: { label: 'Assignment Export' },
       });
       resetAfterAction();
@@ -2320,6 +2321,7 @@ export default function AssignmentFormatterPage() {
                   style={{ height: `calc(${pageDimensions.height} * ${previewScale})` }}
                 >
                   <div
+                    data-export-unscale
                     className="assignment-preview-page relative rounded-xl border border-gray-200 bg-white shadow-lg dark:border-slate-700 dark:bg-white"
                     style={{
                       width: pageDimensions.width,
@@ -2404,6 +2406,7 @@ export default function AssignmentFormatterPage() {
               >
                 <div
                   ref={previewPageRef}
+                  data-export-unscale
                   className="assignment-preview-page relative rounded-xl border border-gray-200 bg-white shadow-lg dark:border-slate-700 dark:bg-white"
                   style={{
                     width: pageDimensions.width,

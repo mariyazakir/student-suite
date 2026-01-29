@@ -120,6 +120,47 @@ const getJsPdfCtor = async () => {
   throw new Error('jsPDF is not available.');
 };
 
+/** mm to px at 96dpi */
+const mmToPx = (mm: number) => (mm / 25.4) * 96;
+
+/**
+ * For mobile: preview pages use transform:scale(<1) so getBoundingClientRect() is small
+ * and the PDF looks compressed. Temporarily remove scale and expand parent so we
+ * capture at full page size.
+ */
+function preparePageForCapture(
+  page: HTMLElement,
+  normalizedPageSize: { width: number; height: number }
+): { target: HTMLElement; restore: () => void } {
+  const inner = page.querySelector('[data-export-unscale]') as HTMLElement | null;
+  const target = inner || page;
+  const saved: Array<{ el: HTMLElement; prop: string; value: string }> = [];
+
+  const saveStyle = (el: HTMLElement, prop: string) => {
+    const value = el.style.getPropertyValue(prop) || '';
+    saved.push({ el, prop, value });
+  };
+  const restore = () => {
+    saved.forEach(({ el, prop, value }) => {
+      el.style.setProperty(prop, value);
+    });
+  };
+
+  if (inner) {
+    saveStyle(inner, 'transform');
+    inner.style.setProperty('transform', 'none');
+    const pageEl = page as HTMLElement;
+    saveStyle(pageEl, 'overflow');
+    saveStyle(pageEl, 'height');
+    saveStyle(pageEl, 'min-height');
+    pageEl.style.setProperty('overflow', 'visible');
+    pageEl.style.setProperty('height', `${normalizedPageSize.height}mm`);
+    pageEl.style.setProperty('min-height', `${normalizedPageSize.height}mm`);
+  }
+
+  return { target, restore };
+}
+
 export const exportMultiPagePdf = async ({
   exportRef,
   pageSelector,
@@ -153,32 +194,43 @@ export const exportMultiPagePdf = async ({
       orientation: 'portrait',
     });
 
+    const targetWidthPx = mmToPx(normalizedPageSize.width);
+    const targetHeightPx = mmToPx(normalizedPageSize.height);
+
     for (let i = 0; i < pages.length; i += 1) {
       const page = pages[i];
-      const rect = page.getBoundingClientRect();
-      const canvas = await html2canvas(page, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        windowWidth: Math.ceil(rect.width),
-        windowHeight: Math.ceil(rect.height),
-        scrollX: 0,
-        scrollY: 0,
-      });
-      logDebug(debug, `Canvas ${i + 1} size`, {
-        width: canvas.width,
-        height: canvas.height,
-      });
-      if (canvas.width === 0 || canvas.height === 0) {
-        throw new Error('Export canvas is empty.');
+      const { target, restore } = preparePageForCapture(page, normalizedPageSize);
+      try {
+        await waitForNextPaint();
+        const rect = target.getBoundingClientRect();
+        const w = Math.max(rect.width, targetWidthPx);
+        const h = Math.max(rect.height, targetHeightPx);
+        const canvas = await html2canvas(target, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          windowWidth: Math.ceil(w),
+          windowHeight: Math.ceil(h),
+          scrollX: 0,
+          scrollY: 0,
+        });
+        logDebug(debug, `Canvas ${i + 1} size`, {
+          width: canvas.width,
+          height: canvas.height,
+        });
+        if (canvas.width === 0 || canvas.height === 0) {
+          throw new Error('Export canvas is empty.');
+        }
+        const imgData = canvas.toDataURL('image/png');
+        if (i > 0) {
+          pdf.addPage();
+        }
+        pdf.addImage(imgData, 'PNG', 0, 0, normalizedPageSize.width, normalizedPageSize.height);
+      } finally {
+        restore();
       }
-      const imgData = canvas.toDataURL('image/png');
-      if (i > 0) {
-        pdf.addPage();
-      }
-      pdf.addImage(imgData, 'PNG', 0, 0, normalizedPageSize.width, normalizedPageSize.height);
     }
 
     logDebug(debug, 'PDF page count', pages.length);
@@ -193,16 +245,19 @@ export const exportMultiPageImages = async ({
   pageSelector,
   filename,
   format,
+  pageSize,
   debug,
 }: {
   exportRef: HTMLDivElement | null;
   pageSelector: string;
   filename: string;
   format: 'png' | 'jpeg';
+  pageSize?: PageSizeMm;
   debug?: ExportDebug;
 }) => {
   const cleanupVisibility = setExportVisibility();
   try {
+    const normalizedPageSize = pageSize ? normalizePageSize(pageSize) : { width: 210, height: 297 };
     const root = resolveExportRoot(exportRef);
     logDebug(debug, 'Export root', root);
     await waitForNextPaint();
@@ -211,33 +266,43 @@ export const exportMultiPageImages = async ({
     const pages = resolveExportPages(root, pageSelector);
     logDebug(debug, 'Pages detected', pages.length);
 
+    const targetWidthPx = mmToPx(normalizedPageSize.width);
+    const targetHeightPx = mmToPx(normalizedPageSize.height);
     const html2canvas = (await import('html2canvas')).default;
     for (let i = 0; i < pages.length; i += 1) {
       const page = pages[i];
-      const rect = page.getBoundingClientRect();
-      const canvas = await html2canvas(page, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        windowWidth: Math.ceil(rect.width),
-        windowHeight: Math.ceil(rect.height),
-        scrollX: 0,
-        scrollY: 0,
-      });
-      logDebug(debug, `Canvas ${i + 1} size`, {
-        width: canvas.width,
-        height: canvas.height,
-      });
-      if (canvas.width === 0 || canvas.height === 0) {
-        throw new Error('Export canvas is empty.');
+      const { target, restore } = preparePageForCapture(page, normalizedPageSize);
+      try {
+        await waitForNextPaint();
+        const rect = target.getBoundingClientRect();
+        const w = Math.max(rect.width, targetWidthPx);
+        const h = Math.max(rect.height, targetHeightPx);
+        const canvas = await html2canvas(target, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          windowWidth: Math.ceil(w),
+          windowHeight: Math.ceil(h),
+          scrollX: 0,
+          scrollY: 0,
+        });
+        logDebug(debug, `Canvas ${i + 1} size`, {
+          width: canvas.width,
+          height: canvas.height,
+        });
+        if (canvas.width === 0 || canvas.height === 0) {
+          throw new Error('Export canvas is empty.');
+        }
+        const dataUrl = canvas.toDataURL(`image/${format}`, 0.95);
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `${filename}-page-${i + 1}.${format}`;
+        link.click();
+      } finally {
+        restore();
       }
-      const dataUrl = canvas.toDataURL(`image/${format}`, 0.95);
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `${filename}-page-${i + 1}.${format}`;
-      link.click();
     }
   } finally {
     cleanupVisibility();
