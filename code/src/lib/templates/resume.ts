@@ -1,0 +1,95 @@
+import type { Template } from './index';
+
+export const resumeTemplates: Template[] = [
+  {
+    id: 'minimal',
+    name: 'Minimal',
+    description: 'Clean, ATS-friendly single column layout.',
+    appliesTo: ['resume'],
+    rules: {
+      layout: { columns: 1, dividers: false },
+      fonts: { body: 'Inter, system-ui, -apple-system, sans-serif', heading: 'Inter', size: 11 },
+      spacing: { line: 1.35, paragraph: 8 },
+      sectionOrder: ['summary', 'experience', 'education', 'skills', 'projects'],
+      colors: { primary: '#111827', accent: '#2563eb', background: '#ffffff', border: '#e5e7eb' },
+    },
+  },
+  {
+    id: 'modern',
+    name: 'Modern',
+    description: 'Accented headers with a balanced two-tone palette.',
+    appliesTo: ['resume'],
+    rules: {
+      layout: { columns: 1, headerAccent: true },
+      fonts: { body: 'Inter, system-ui, -apple-system, sans-serif', heading: 'Inter', size: 11.5 },
+      spacing: { line: 1.4, paragraph: 10 },
+      sectionOrder: ['summary', 'experience', 'projects', 'education', 'skills'],
+      colors: { primary: '#0f172a', accent: '#2563eb', background: '#f8fafc', border: '#cbd5e1' },
+    },
+  },
+  {
+    id: 'classic',
+    name: 'Classic',
+    description: 'Traditional serif look optimized for readability.',
+    appliesTo: ['resume'],
+    rules: {
+      layout: { columns: 1, serif: true },
+      fonts: { body: 'Georgia, "Times New Roman", serif', heading: 'Georgia', size: 11 },
+      spacing: { line: 1.4, paragraph: 10 },
+      sectionOrder: ['summary', 'experience', 'education', 'skills', 'certifications'],
+      colors: { primary: '#0f172a', accent: '#1f2937', background: '#ffffff', border: '#e5e7eb' },
+    },
+  },
+  {
+    id: 'professional',
+    name: 'Professional',
+    description: 'Business-forward layout with clear hierarchy.',
+    appliesTo: ['resume'],
+    rules: {
+      layout: { columns: 1, sidebar: false },
+      fonts: { body: 'Inter, system-ui, -apple-system, sans-serif', heading: 'Inter', size: 11.5 },
+      spacing: { line: 1.35, paragraph: 9 },
+      sectionOrder: ['summary', 'experience', 'education', 'projects', 'skills'],
+      colors: { primary: '#0f172a', accent: '#111827', background: '#ffffff', border: '#d1d5db' },
+    },
+  },
+  {
+    id: 'compact',
+    name: 'Compact',
+    description: 'Space-efficient layout for dense experience.',
+    appliesTo: ['resume'],
+    rules: {
+      layout: { columns: 1, compact: true },
+      fonts: { body: 'Inter, system-ui, -apple-system, sans-serif', heading: 'Inter', size: 10.5 },
+      spacing: { line: 1.25, paragraph: 6 },
+      sectionOrder: ['summary', 'experience', 'skills', 'projects', 'education'],
+      colors: { primary: '#111827', accent: '#111827', background: '#ffffff', border: '#e5e7eb' },
+    },
+  },
+  {
+    id: 'executive',
+    name: 'Executive',
+    description: 'Bold headers with understated dividers.',
+    appliesTo: ['resume'],
+    rules: {
+      layout: { columns: 1, headerAccent: true },
+      fonts: { body: 'Inter, system-ui, -apple-system, sans-serif', heading: 'Inter', size: 11.5 },
+      spacing: { line: 1.4, paragraph: 10 },
+      sectionOrder: ['summary', 'experience', 'leadership', 'projects', 'education'],
+      colors: { primary: '#0b1224', accent: '#0b1224', background: '#ffffff', border: '#d1d5db' },
+    },
+  },
+  {
+    id: 'academic',
+    name: 'Academic',
+    description: 'Research-ready layout for publications and coursework.',
+    appliesTo: ['resume'],
+    rules: {
+      layout: { columns: 1, academic: true },
+      fonts: { body: '"Times New Roman", Times, serif', heading: '"Times New Roman", Times, serif', size: 11.5 },
+      spacing: { line: 1.5, paragraph: 10 },
+      sectionOrder: ['summary', 'education', 'research', 'publications', 'experience', 'skills'],
+      colors: { primary: '#0f172a', accent: '#0f172a', background: '#ffffff', border: '#d1d5db' },
+    },
+  },
+];

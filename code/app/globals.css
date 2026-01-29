@@ -1,0 +1,1444 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background: var(--app-bg, #f9fafb);
+    color: var(--app-text, #111827);
+    direction: ltr;
+  }
+  
+  /* Ensure all text inputs default to LTR and prevent auto-detection */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  textarea,
+  [contenteditable] {
+    direction: ltr !important;
+    unicode-bidi: plaintext !important;
+  }
+}
+
+:root {
+  --sidebar-bg: #ffffff;
+  --sidebar-text: #374151;
+  --sidebar-border: #e5e7eb;
+  --sidebar-hover-bg: #f3f4f6;
+  --sidebar-active-bg: #e5e7eb;
+  --sidebar-active-text: #111827;
+  --sidebar-focus: #4b5563;
+  --topbar-bg: #ffffff;
+  --topbar-border: #e5e7eb;
+  --topbar-text: #111827;
+  --topbar-muted: #6b7280;
+  --topbar-hover-bg: #f3f4f6;
+  --topbar-focus: #4b5563;
+}
+
+.dark {
+  --sidebar-bg: #0f172a;
+  --sidebar-text: #e2e8f0;
+  --sidebar-border: #1f2937;
+  --sidebar-hover-bg: #1f2937;
+  --sidebar-active-bg: #334155;
+  --sidebar-active-text: #ffffff;
+  --sidebar-focus: #94a3b8;
+  --topbar-bg: #0f172a;
+  --topbar-border: #1f2937;
+  --topbar-text: #f8fafc;
+  --topbar-muted: #94a3b8;
+  --topbar-hover-bg: #1f2937;
+  --topbar-focus: #94a3b8;
+}
+
+.high-contrast-mode {
+  --sidebar-bg: #ffffff;
+  --sidebar-text: #000000;
+  --sidebar-border: #000000;
+  --sidebar-hover-bg: #f3f4f6;
+  --sidebar-active-bg: #e5e7eb;
+  --sidebar-active-text: #000000;
+  --sidebar-focus: #000000;
+  --topbar-bg: #ffffff;
+  --topbar-border: #000000;
+  --topbar-text: #000000;
+  --topbar-muted: #000000;
+  --topbar-hover-bg: #f3f4f6;
+  --topbar-focus: #000000;
+}
+
+/* Gender-based themes (non-neutral) */
+.theme-girlish {
+  --sidebar-bg: #fef7f9;
+  --sidebar-text: #3a2b3f;
+  --sidebar-border: #f3d9e3;
+  --sidebar-hover-bg: #f5e4ec;
+  --sidebar-active-bg: #f0d3df;
+  --sidebar-active-text: #2c2333;
+  --sidebar-focus: #e58cb6;
+  --topbar-bg: #fef7f9;
+  --topbar-border: #f3d9e3;
+  --topbar-text: #2c2333;
+  --topbar-muted: #6b5670;
+  --topbar-hover-bg: #f5e4ec;
+  --topbar-focus: #e58cb6;
+}
+
+.theme-girlish body {
+  background: #f8f1f3;
+  color: #2c2333;
+}
+
+.theme-boyish {
+  --sidebar-bg: #111a2d;
+  --sidebar-text: #d7e6ff;
+  --sidebar-border: #1f2b44;
+  --sidebar-hover-bg: #1b2640;
+  --sidebar-active-bg: #1f3358;
+  --sidebar-active-text: #ffffff;
+  --sidebar-focus: #1ec1ff;
+  --topbar-bg: #111a2d;
+  --topbar-border: #1f2b44;
+  --topbar-text: #e8f3ff;
+  --topbar-muted: #9fb8d9;
+  --topbar-hover-bg: #1b2640;
+  --topbar-focus: #1ec1ff;
+}
+
+.theme-boyish body {
+  background: #0d1424;
+  color: #e8f3ff;
+}
+
+/* Ensure high contrast overrides theme palettes */
+.high-contrast-mode.theme-girlish,
+.high-contrast-mode.theme-boyish {
+  --sidebar-bg: #ffffff;
+  --sidebar-text: #000000;
+  --sidebar-border: #000000;
+  --sidebar-hover-bg: #f3f4f6;
+  --sidebar-active-bg: #e5e7eb;
+  --sidebar-active-text: #000000;
+  --sidebar-focus: #000000;
+  --topbar-bg: #ffffff;
+  --topbar-border: #000000;
+  --topbar-text: #000000;
+  --topbar-muted: #000000;
+  --topbar-hover-bg: #f3f4f6;
+  --topbar-focus: #000000;
+}
+
+/* Print Styles - Professional resume printing */
+@media print {
+  /* ============================================
+     HIDE ALL UI ELEMENTS
+     ============================================ */
+  /* Hide UI elements */
+  .no-print,
+  header,
+  .export-buttons,
+  .template-switcher,
+  [class*="fixed"],
+  [role="dialog"],
+  .ats-heatmap-mark {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Hide the split layout container but allow children to show using contents */
+  [class*="ResizableSplitLayout"] {
+    display: contents !important; /* Makes container transparent, children can show */
+  }
+
+  /* Hide left panel (editor) - first child div in desktop layout */
+  [class*="ResizableSplitLayout"] > div > div:first-child,
+  /* Hide left panel in mobile layout */
+  .md\:hidden > div:first-child {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Hide divider - second child div */
+  [class*="ResizableSplitLayout"] > div > div:nth-child(2) {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Show only the right panel (preview) - last child div in desktop */
+  [class*="ResizableSplitLayout"] > div > div:last-child {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
+  /* Show right panel in mobile layout */
+  .md\:hidden > div:last-child {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
+  /* Show preview wrapper and make it full width */
+  .no-print-preview-wrapper {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Ensure resume preview is visible and positioned correctly */
+  #resume-preview {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  /* ============================================
+     PAGE SETUP - A4 SIZE
+     ============================================ */
+  @page {
+    size: A4;
+    margin: 0.75in; /* Standard resume margins (19mm) */
+  }
+
+  /* Portrait orientation (default) */
+  @page {
+    size: A4 portrait;
+  }
+
+  /* Ensure proper page breaking for multi-page resumes */
+  #resume-preview {
+    page-break-after: auto;
+  }
+
+  /* Each section should try to avoid breaking, but allow between sections */
+  #resume-preview section {
+    page-break-before: auto;
+    page-break-after: auto;
+  }
+
+  /* Landscape orientation support */
+  @page :first {
+    /* First page can be different if needed */
+  }
+
+  /* ============================================
+     BODY AND ROOT LAYOUT
+     ============================================ */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html,
+  body {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  /* Remove all scrollbars */
+  html,
+  body {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+
+  /* Ensure resume preview and children have visible overflow */
+  #resume-preview,
+  #resume-preview * {
+    overflow: visible !important;
+  }
+
+  /* ============================================
+     RESUME PREVIEW CONTAINER
+     ============================================ */
+  /* Make resume preview the only visible element */
+  #resume-preview {
+    /* Reset all positioning */
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    overflow: visible !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    page-break-inside: avoid;
+    
+    /* Remove any transforms */
+    transform: none !important;
+    scale: 1 !important;
+    zoom: 1 !important;
+    
+    /* Center on page */
+    box-sizing: border-box;
+  }
+
+  /* Remove gray background from preview container */
+  #resume-preview.bg-gray-50 {
+    background: white !important;
+  }
+
+  /* Ensure all children of resume preview are visible */
+  #resume-preview * {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: revert !important;
+  }
+
+  /* ============================================
+     TEMPLATE CONTAINERS
+     ============================================ */
+  /* Template wrapper (direct child of resume-preview) */
+  #resume-preview > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    box-sizing: border-box;
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    transform: none !important;
+  }
+
+  /* Multi-page resume container in print */
+  #resume-preview .multi-page-resume {
+    padding: 0 !important;
+    gap: 0 !important;
+    background: white !important;
+  }
+
+  /* A4 page in print - allow natural page breaking */
+  #resume-preview .a4-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    max-height: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    /* Don't force page break - let content flow naturally */
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* A4 page content in print */
+  #resume-preview .a4-page-content {
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  /* Template content in print */
+  #resume-preview .a4-page-content-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.4in !important; /* Internal padding for content */
+    background: white !important;
+    box-sizing: border-box;
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    transform: none !important;
+  }
+
+  /* Template content wrapper */
+  #resume-preview .a4-page-content-wrapper > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Page numbers in print */
+  #resume-preview .a4-page-number {
+    display: none !important; /* Use CSS counters instead */
+  }
+
+  /* Page numbering using CSS - will be handled by browser print */
+  /* Note: CSS @page rules for page numbers vary by browser support */
+
+  /* ============================================
+     REMOVE UI STYLING FROM RESUME
+     ============================================ */
+  /* Remove shadows */
+  #resume-preview * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Remove borders from UI elements (keep resume content borders) */
+  #resume-preview header,
+  #resume-preview .no-print {
+    border: none !important;
+  }
+
+  /* Ensure white background for container, but preserve template colors */
+  #resume-preview {
+    background-color: white !important;
+  }
+
+  /* Preserve colored sections in Modern template */
+  #resume-preview .bg-primary-600,
+  #resume-preview .bg-primary-100,
+  #resume-preview .bg-primary-50 {
+    /* Keep colors for Modern template header */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Remove gray backgrounds that are just for screen display */
+  #resume-preview .bg-gray-50:not(.bg-primary-50) {
+    background-color: white !important;
+  }
+
+  /* ============================================
+     TYPOGRAPHY AND SPACING
+     ============================================ */
+  #resume-preview {
+    font-size: 11pt !important; /* Standard resume font size */
+    line-height: 1.4 !important;
+    color: black !important;
+  }
+
+  /* Ensure links are visible */
+  #resume-preview a {
+    color: black !important;
+    text-decoration: underline !important;
+  }
+
+  /* ============================================
+     PAGE BREAKS
+     ============================================ */
+  .page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  /* Prevent breaking inside sections */
+  #resume-preview section {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Prevent breaking inside experience/education entries */
+  #resume-preview section > div,
+  #resume-preview section > article {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Allow breaking between entries */
+  #resume-preview section > div + div {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  /* ============================================
+     LANDSCAPE ORIENTATION SUPPORT
+     ============================================ */
+  @page landscape {
+    size: A4 landscape;
+    margin: 0.5in; /* Smaller margins for landscape */
+  }
+
+  /* ============================================
+     PREVENT CLIPPING
+     ============================================ */
+  #resume-preview * {
+    max-width: 100% !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* Images and media */
+  #resume-preview img {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* ============================================
+     REMOVE INTERACTIVE ELEMENTS
+     ============================================ */
+  #resume-preview button,
+  #resume-preview input,
+  #resume-preview textarea,
+  #resume-preview select {
+    display: none !important;
+  }
+
+  /* ============================================
+     ENSURE PROPER SCALING - NO TRANSFORMS
+     ============================================ */
+  /* Remove all transforms and scaling */
+  #resume-preview,
+  #resume-preview * {
+    transform: none !important;
+    scale: 1 !important;
+    zoom: 1 !important;
+    perspective: none !important;
+    transform-style: flat !important;
+  }
+
+  /* ============================================
+     FIX FLEXBOX/GRID IN PRINT
+     ============================================ */
+  #resume-preview [class*="flex"] {
+    display: flex !important;
+    visibility: visible !important;
+  }
+
+  #resume-preview [class*="grid"] {
+    display: grid !important;
+    visibility: visible !important;
+  }
+
+  /* Ensure all text and content is visible */
+  #resume-preview p,
+  #resume-preview h1,
+  #resume-preview h2,
+  #resume-preview h3,
+  #resume-preview h4,
+  #resume-preview span,
+  #resume-preview div,
+  #resume-preview section,
+  #resume-preview article,
+  #resume-preview ul,
+  #resume-preview li {
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: inherit !important;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-medium;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors font-medium;
+  }
+
+  /* Mobile: Smaller buttons */
+  @media (max-width: 767px) {
+    .btn-secondary {
+      @apply px-2 py-1 text-xs;
+      min-height: auto;
+      height: auto;
+    }
+    
+    .btn-primary {
+      @apply px-2.5 py-1.5 text-xs;
+      min-height: auto;
+      height: auto;
+    }
+    
+    /* Grey buttons with inline classes (changed from primary) */
+    button.bg-primary-600:not(.template-button),
+    .bg-primary-600:not(.template-button) {
+      @apply px-2.5 py-1.5 text-xs;
+      min-height: auto;
+      height: auto;
+    }
+    
+    /* Grey buttons with inline classes */
+    button.bg-gray-600,
+    .bg-gray-600 {
+      @apply px-2.5 py-1.5 text-xs;
+      min-height: auto;
+      height: auto;
+    }
+  }
+
+  /* Very small mobile: ≤480px - Reduced button sizes */
+  @media (max-width: 480px) {
+    .btn-secondary {
+      @apply px-1.5 py-1 text-sm;
+      min-height: 44px !important; /* Maintain accessibility tap size */
+    }
+    
+    .btn-primary {
+      @apply px-2 py-1.5 text-sm;
+      min-height: 44px !important; /* Maintain accessibility tap size */
+    }
+    
+    /* Grey buttons with inline classes */
+    button.bg-gray-600,
+    .bg-gray-600 {
+      @apply px-2 py-1.5 text-sm;
+      min-height: 44px !important; /* Maintain accessibility tap size */
+    }
+
+    /* All action buttons - smaller padding, text-sm, maintain tap size */
+    button.btn-secondary,
+    button.btn-primary,
+    button[class*="bg-gray-600"] {
+      @apply text-sm;
+      min-height: 44px !important;
+    }
+  }
+  
+  .input-field {
+    @apply w-full px-3 py-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent focus:bg-white;
+  }
+  
+  .textarea-field {
+    @apply w-full px-3 py-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent focus:bg-white resize-y;
+  }
+  
+  .section-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6;
+  }
+
+  /* Mobile: Increased spacing in section cards */
+  @media (max-width: 767px) {
+    .section-card {
+      @apply p-5;
+    }
+
+    .section-card .space-y-3 > * + * {
+      margin-top: 1rem; /* 16px */
+    }
+
+    .section-card .space-y-4 > * + * {
+      margin-top: 1.25rem; /* 20px */
+    }
+
+    .section-card .space-y-6 > * + * {
+      margin-top: 1.75rem; /* 28px */
+    }
+
+    /* Larger buttons in section cards */
+    .section-card button {
+      @apply min-h-[56px] px-4 py-3 text-base;
+    }
+  }
+}
+
+/* ============================================
+   RESPONSIVE UTILITY CLASSES
+   ============================================ */
+@layer utilities {
+  /* Mobile spacing */
+  .mobile-padding {
+    @apply px-4 py-3;
+  }
+
+  /* Touch-friendly targets (min 44x44px, increased to 56px for mobile) */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  @media (max-width: 767px) {
+    .touch-target {
+      @apply min-h-[44px] min-w-[44px];
+    }
+    
+    /* Override for buttons - make them smaller */
+    button.touch-target {
+      @apply min-h-[36px] min-w-[36px];
+    }
+  }
+
+  /* Prevent horizontal overflow on mobile */
+  .mobile-container {
+    @apply w-full max-w-full overflow-x-hidden;
+  }
+
+  /* Smooth transitions for layout changes */
+  .layout-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Slide up animation for mobile modals */
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+
+  /* Page Turn Animation for Mobile Preview */
+  @keyframes page-turn-forward {
+    0% {
+      transform: translateX(0) rotateY(0deg);
+      opacity: 1;
+    }
+    50% {
+      transform: translateX(-50%) rotateY(-10deg);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateX(-100%) rotateY(-20deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes page-turn-reverse {
+    0% {
+      transform: translateX(100%) rotateY(20deg);
+      opacity: 0;
+    }
+    50% {
+      transform: translateX(50%) rotateY(10deg);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateX(0) rotateY(0deg);
+      opacity: 1;
+    }
+  }
+
+  .page-turn-forward {
+    animation: page-turn-forward 0.6s ease-in-out;
+  }
+
+  .page-turn-reverse {
+    animation: page-turn-reverse 0.6s ease-in-out;
+  }
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+/* Mobile: <768px */
+@media (max-width: 767px) {
+  /* Ensure no horizontal overflow */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Prevent any element from causing overflow */
+  img, video, iframe, embed, object {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Mobile-friendly header */
+  header {
+    @apply px-4 py-3;
+  }
+
+  /* Mobile-friendly buttons - smaller size for better fit */
+  button:not(.touch-target) {
+    @apply min-h-[36px];
+  }
+  
+  /* Keep touch-target buttons slightly larger for accessibility */
+  button.touch-target {
+    @apply min-h-[44px];
+  }
+
+  /* Mobile-friendly inputs - increased spacing */
+  input,
+  textarea {
+    @apply text-base; /* Prevents zoom on iOS */
+    @apply py-3 px-4; /* Increased padding for touch */
+    @apply mb-4; /* Increased spacing between inputs */
+  }
+
+  /* Increased spacing between form elements */
+  .space-y-4 > * + * {
+    margin-top: 1.25rem; /* 20px instead of 16px */
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 1.75rem; /* 28px instead of 24px */
+  }
+
+  /* Prevent accidental taps - add touch-action */
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    touch-action: manipulation;
+  }
+
+  /* Safe area inset for bottom navigation */
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}
+
+/* Tablet: 768px - 1023px */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet-specific adjustments */
+  .section-card {
+    @apply p-4 sm:p-5;
+  }
+
+  /* Preview container - responsive for tablets */
+  #resume-preview {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .multi-page-resume {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 12px !important;
+    gap: 15px !important;
+  }
+
+  .a4-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    margin: 0 auto 15px auto !important;
+  }
+
+  .a4-page-content-wrapper {
+    padding: 10mm 8mm !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Template containers - responsive padding */
+  #resume-preview .bg-white,
+  #resume-preview .max-w-4xl {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1.5rem !important;
+  }
+}
+
+/* Desktop: ≥1024px */
+@media (min-width: 1024px) {
+  /* Desktop-specific styles */
+}
+
+/* ============================================
+   A4 PAGE LAYOUT SYSTEM
+   ============================================ */
+
+/* Multi-page resume container */
+.multi-page-resume {
+  width: 100%;
+  display: block;
+  padding: 0;
+  margin: 0 auto;
+  background: transparent;
+}
+
+.resume-flow {
+  width: 210mm;
+  max-width: 100%;
+  padding: 10mm;
+  margin: 0 auto;
+  background: #ffffff;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* A4 Page Container */
+/* A4 dimensions: 210mm × 297mm */
+/* At 96 DPI: 210mm ≈ 794px, 297mm ≈ 1123px */
+.a4-page {
+  width: 210mm;
+  max-width: 100%;
+  min-height: auto;
+  background: white;
+  margin: 0 auto;
+  position: relative;
+  display: block;
+  overflow: visible;
+}
+
+/* A4 Page Content Area */
+.a4-page-content {
+  padding: 0;
+  display: block;
+  position: relative;
+  min-height: auto;
+  overflow: visible;
+  height: auto;
+}
+
+/* Content wrapper within A4 page */
+.a4-page-content-wrapper {
+  width: 100%;
+  padding: 10mm;
+  margin: 0;
+  min-height: 100%;
+  /* Allow content to grow for multi-page */
+  height: auto;
+  position: relative;
+}
+
+/* Full content wrapper (first page) - allows overflow to show on multiple pages */
+.a4-page-content-full {
+  /* Content can overflow to show on subsequent pages visually */
+  overflow: visible;
+  height: auto;
+}
+
+/* Continuation pages (pages 2+) - visual placeholder */
+.a4-page-continuation {
+  /* Visual placeholder for continuation pages */
+  min-height: calc(297mm - 20mm);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Ensure pages are visually separated */
+.multi-page-resume > .a4-page + .a4-page {
+  margin-top: 20px;
+}
+
+/* For screen: First page shows all content, it will visually overflow */
+.multi-page-resume > .a4-page:first-child .a4-page-content-wrapper {
+  /* Content can overflow to show it continues on next pages */
+  overflow: visible;
+}
+
+/* Full content container (hidden, used for measurement) */
+.a4-page-content-full {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* Clipped page content - shows portion of full content */
+.a4-page-clip {
+  overflow: hidden;
+  padding: 10mm;
+}
+
+/* Template content within A4 page */
+.a4-page-content-wrapper > div {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+/* Section page break rules - prevent awkward breaks */
+.a4-page-content section {
+  page-break-inside: auto;
+  break-inside: auto;
+  margin-bottom: 1rem;
+}
+
+/* Prevent breaking inside experience/education entries */
+.a4-page-content section > div:has(h3),
+.a4-page-content section > article:has(h3) {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Allow breaking between entries */
+.a4-page-content section > div + div:has(h3),
+.a4-page-content section > article + article:has(h3) {
+  page-break-before: auto;
+  break-before: auto;
+}
+
+/* Prevent breaking inside lists */
+.a4-page-content ul,
+.a4-page-content ol {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Responsive: Scale down on smaller screens (Tablets and small desktops) */
+@media (max-width: 900px) {
+  .a4-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    box-shadow: none;
+  }
+
+  .a4-page-content {
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  .a4-page-content-wrapper {
+    padding: 10mm 8mm !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .multi-page-resume {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 10px !important;
+    gap: 15px !important;
+  }
+
+  /* Template containers */
+  #resume-preview .bg-white,
+  #resume-preview .max-w-4xl {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1.5rem !important;
+  }
+}
+
+/* Mobile: Full width, responsive to screen */
+@media (max-width: 767px) {
+  /* Preview container - full width and responsive */
+  #resume-preview {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .multi-page-resume {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 8px !important;
+    gap: 12px !important;
+    margin: 0 !important;
+  }
+
+  .a4-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 auto 12px auto !important;
+  }
+
+  .a4-page-content {
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  .a4-page-content-wrapper {
+    padding: 10mm 8mm !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ensure template content is responsive */
+  #resume-preview .bg-white,
+  #resume-preview .max-w-4xl {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide page numbers on mobile for cleaner view */
+  .a4-page::after {
+    display: none;
+  }
+
+  .a4-page-number {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================ */
+
+/* Font Size Variables - Applied to resume preview only */
+:root {
+  --font-size-base: 1rem;
+  --font-size-small: 0.875rem;
+  --font-size-medium: 1rem;
+  --font-size-large: 1.125rem;
+  
+  --font-size-h1-small: 1.75rem;
+  --font-size-h1-medium: 2rem;
+  --font-size-h1-large: 2.25rem;
+  
+  --font-size-h2-small: 1.25rem;
+  --font-size-h2-medium: 1.5rem;
+  --font-size-h2-large: 1.75rem;
+  
+  --font-size-h3-small: 1.125rem;
+  --font-size-h3-medium: 1.25rem;
+  --font-size-h3-large: 1.5rem;
+}
+
+/* Font Size Classes - Only affect resume preview */
+.font-size-small #resume-preview,
+.font-size-small #resume-preview * {
+  font-size: var(--font-size-small) !important;
+}
+
+.font-size-small #resume-preview h1 {
+  font-size: var(--font-size-h1-small) !important;
+}
+
+.font-size-small #resume-preview h2 {
+  font-size: var(--font-size-h2-small) !important;
+}
+
+.font-size-small #resume-preview h3 {
+  font-size: var(--font-size-h3-small) !important;
+}
+
+.font-size-medium #resume-preview,
+.font-size-medium #resume-preview * {
+  font-size: var(--font-size-medium) !important;
+}
+
+.font-size-medium #resume-preview h1 {
+  font-size: var(--font-size-h1-medium) !important;
+}
+
+.font-size-medium #resume-preview h2 {
+  font-size: var(--font-size-h2-medium) !important;
+}
+
+.font-size-medium #resume-preview h3 {
+  font-size: var(--font-size-h3-medium) !important;
+}
+
+.font-size-large #resume-preview,
+.font-size-large #resume-preview * {
+  font-size: var(--font-size-large) !important;
+}
+
+.font-size-large #resume-preview h1 {
+  font-size: var(--font-size-h1-large) !important;
+}
+
+.font-size-large #resume-preview h2 {
+  font-size: var(--font-size-h2-large) !important;
+}
+
+.font-size-large #resume-preview h3 {
+  font-size: var(--font-size-h3-large) !important;
+}
+
+/* High Contrast Mode - Applied to resume preview only */
+.high-contrast-mode #resume-preview {
+  /* Strong text contrast */
+  color: #000000 !important;
+  background: #ffffff !important;
+}
+
+.high-contrast-mode #resume-preview * {
+  color: #000000 !important;
+}
+
+.high-contrast-mode #resume-preview h1,
+.high-contrast-mode #resume-preview h2,
+.high-contrast-mode #resume-preview h3,
+.high-contrast-mode #resume-preview h4,
+.high-contrast-mode #resume-preview h5,
+.high-contrast-mode #resume-preview h6 {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  border-color: #000000 !important;
+}
+
+/* Strong section separators */
+.high-contrast-mode #resume-preview section {
+  border-top: 2px solid #000000 !important;
+  border-bottom: 1px solid #000000 !important;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.high-contrast-mode #resume-preview section:first-child {
+  border-top: none !important;
+}
+
+/* Clear headings with strong borders */
+.high-contrast-mode #resume-preview h2 {
+  border-bottom: 3px solid #000000 !important;
+  padding-bottom: 0.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Links - high contrast */
+.high-contrast-mode #resume-preview a {
+  color: #000000 !important;
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  font-weight: 600 !important;
+}
+
+.high-contrast-mode #resume-preview a:hover,
+.high-contrast-mode #resume-preview a:focus {
+  color: #000000 !important;
+  text-decoration: underline !important;
+  outline: 2px solid #000000 !important;
+  outline-offset: 2px !important;
+}
+
+/* Bullets and lists - high visibility */
+.high-contrast-mode #resume-preview ul,
+.high-contrast-mode #resume-preview ol {
+  border-left: 2px solid #000000 !important;
+  padding-left: 1.5rem !important;
+}
+
+.high-contrast-mode #resume-preview li {
+  color: #000000 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.high-contrast-mode #resume-preview li::marker {
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+/* Remove light gray on white issues */
+.high-contrast-mode #resume-preview .text-gray-500,
+.high-contrast-mode #resume-preview .text-gray-600,
+.high-contrast-mode #resume-preview .text-gray-700 {
+  color: #000000 !important;
+}
+
+.high-contrast-mode #resume-preview .bg-gray-50,
+.high-contrast-mode #resume-preview .bg-gray-100 {
+  background: #ffffff !important;
+  border: 1px solid #000000 !important;
+}
+
+/* Borders and separators */
+.high-contrast-mode #resume-preview .border-gray-200,
+.high-contrast-mode #resume-preview .border-gray-300 {
+  border-color: #000000 !important;
+  border-width: 2px !important;
+}
+
+/* Ensure print/PDF get accessibility styles */
+@media print {
+  .high-contrast-mode #resume-preview {
+    color: #000000 !important;
+    background: #ffffff !important;
+  }
+  
+  .high-contrast-mode #resume-preview * {
+    color: #000000 !important;
+  }
+  
+  .high-contrast-mode #resume-preview h1,
+  .high-contrast-mode #resume-preview h2,
+  .high-contrast-mode #resume-preview h3 {
+    color: #000000 !important;
+    border-color: #000000 !important;
+  }
+  
+  .high-contrast-mode #resume-preview section {
+    border-top: 2px solid #000000 !important;
+    border-bottom: 1px solid #000000 !important;
+  }
+  
+  .high-contrast-mode #resume-preview a {
+    color: #000000 !important;
+    text-decoration: underline !important;
+  }
+}
+
+/* ============================================
+   KEYBOARD NAVIGATION & FOCUS STATES
+   ============================================ */
+
+/* Visible focus states for all interactive elements */
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus,
+[role="button"]:focus,
+[role="switch"]:focus,
+[role="radio"]:focus,
+[role="menuitem"]:focus,
+[tabindex]:focus {
+  outline: 2px solid #4b5563 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1) !important;
+}
+
+/* Template buttons keep primary color focus */
+.template-button:focus {
+  outline: 2px solid #2563eb !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* High contrast focus states */
+.high-contrast-mode button:focus,
+.high-contrast-mode a:focus,
+.high-contrast-mode input:focus,
+.high-contrast-mode textarea:focus,
+.high-contrast-mode select:focus {
+  outline: 3px solid #000000 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Skip to content link (hidden until focused) */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000000;
+  color: #ffffff;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* ============================================
+   COLOR CONTRAST FIXES (WCAG AA Compliance)
+   ============================================ */
+
+/* Ensure placeholder text is readable */
+input::placeholder,
+textarea::placeholder {
+  color: #6b7280 !important;
+  opacity: 1 !important;
+}
+
+.high-contrast-mode input::placeholder,
+.high-contrast-mode textarea::placeholder {
+  color: #4b5563 !important;
+}
+
+/* Global button styling */
+button,
+button.btn-primary,
+button.btn-secondary,
+button.template-button {
+  color: #000000 !important;
+  background-color: #f3f4f6 !important;
+}
+
+button:hover,
+button.btn-primary:hover,
+button.btn-secondary:hover,
+button.template-button:hover {
+  background-color: #e5e7eb !important;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Ensure text on buttons has sufficient contrast */
+.btn-primary,
+.btn-secondary {
+  background-color: #f3f4f6 !important;
+  color: #000000 !important;
+}
+
+/* Remove light gray on white text issues */
+.text-gray-400 {
+  color: #6b7280 !important; /* Darker for better contrast */
+}
+
+.text-gray-500 {
+  color: #4b5563 !important; /* Darker for better contrast */
+}
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Live region for announcements */
+.live-region {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ATS preview heatmap */
+.ats-heatmap-mark {
+  background: rgba(253, 224, 71, 0.45);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.ats-input-highlight {
+  background: rgba(187, 247, 208, 0.6);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* Phase 6.1 Keyboard Navigation: Completed */
+
+/* Phase 6.2 Enter & Escape Behavior: Completed */
+
+/* Phase 6.3 Modal Focus Management: Completed */
+
+/* Phase 6.4 Screen Reader Semantics: Completed */
+
+/* Phase 6 Accessibility: Completed */

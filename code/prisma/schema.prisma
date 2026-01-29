@@ -1,0 +1,104 @@
+// Prisma Schema for Resume Builder SaaS
+// Supports PostgreSQL (production) and SQLite (development)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Change to "sqlite" for local dev
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  name            String
+  passwordHash    String
+  subscriptionTier String   @default("free") // free, pro, enterprise
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  resumes         Resume[]
+  usageEvents     UsageEvent[]
+  
+  @@index([email])
+}
+
+model Resume {
+  id              String    @id @default(uuid())
+  userId          String
+  title           String
+  currentVersionId String?  // Points to latest version
+  jobDescription  String?   @db.Text // Current job description for optimization
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  versions        ResumeVersion[]
+  jobDescriptions JobDescription[]
+  
+  @@index([userId])
+  @@index([currentVersionId])
+}
+
+model ResumeVersion {
+  id              String    @id @default(uuid())
+  resumeId        String
+  versionNumber   Int
+  data            Json      // ResumeData JSON structure
+  metadata        Json      // Version metadata
+  atsScore        Float?
+  recruiterScore  Float?
+  scores          Json?     // Detailed score breakdowns
+  createdAt       DateTime  @default(now())
+  
+  resume          Resume    @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  aiImprovements  AIImprovementHistory[]
+  
+  @@unique([resumeId, versionNumber])
+  @@index([resumeId])
+  @@index([createdAt])
+}
+
+model JobDescription {
+  id              String    @id @default(uuid())
+  resumeId        String
+  content         String    @db.Text
+  parsedData      Json      // Extracted keywords, skills, etc.
+  createdAt       DateTime  @default(now())
+  
+  resume          Resume    @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  
+  @@index([resumeId])
+}
+
+model AIImprovementHistory {
+  id              String    @id @default(uuid())
+  resumeVersionId String
+  section         String    // e.g., "experience.0", "summary"
+  originalContent String    @db.Text
+  improvedContent String    @db.Text
+  prompt          String    @db.Text
+  reasoning       String    @db.Text
+  createdAt       DateTime  @default(now())
+  
+  resumeVersion   ResumeVersion @relation(fields: [resumeVersionId], references: [id], onDelete: Cascade)
+  
+  @@index([resumeVersionId])
+  @@index([section])
+}
+
+model UsageEvent {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([action])
+}
