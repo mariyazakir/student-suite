@@ -15,7 +15,7 @@ export default function Home() {
         <li>📄 Resume Builder</li>
         <li>📝 Notes</li>
         <li>📚 Assignments</li>
-        <li>🤖 AI Tools</li>
+        <li>🤖 PDF Tools</li>
       </ul>
     </main>
   );
