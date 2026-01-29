@@ -5,6 +5,9 @@
  * Improve a project section using AI
  */
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { withErrorHandler, requireAuthContext, parseJSONBody } from '@/lib/api/middleware';
 import { projectImprover } from '@/services/ai';
@@ -18,6 +21,17 @@ import { recordUsageEvent } from '@/lib/usage/usage';
  * Improve a project section
  */
 export const POST = withErrorHandler(async (request: NextRequest) => {
+  const isBuildPhase =
+    process.env.VERCEL_ENV === 'production' &&
+    process.env.NEXT_PHASE === 'phase-production-build';
+
+  if (isBuildPhase) {
+    return NextResponse.json(
+      { message: 'Skipping AI during build' },
+      { status: 200 }
+    );
+  }
+
   const authContext = await requireAuthContext(request);
   const rateLimit = checkRateLimit(
     `ai:improve-project:${authContext.sub}`,
@@ -42,14 +56,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     );
   }
 
-  // Use mock response if in mock mode
+  // Use mock response if in mock mode (no Prisma / recordUsageEvent)
   if (isMockMode()) {
     const mockResponse = getMockResponse('improveProject', body);
-    await recordUsageEvent({
-      userId: authContext.sub,
-      action: 'ai_improve_project',
-      metadata: { mock: true },
-    });
     return NextResponse.json(mockResponse, { headers: rateLimitHeaders });
   }
 
@@ -59,10 +68,12 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       body.jobDescription
     );
 
-    await recordUsageEvent({
-      userId: authContext.sub,
-      action: 'ai_improve_project',
-    });
+    if (!isMockMode()) {
+      await recordUsageEvent({
+        userId: authContext.sub,
+        action: 'ai_improve_project',
+      });
+    }
 
     return NextResponse.json({
       improvedDescription: result.improvedDescription,
@@ -74,11 +85,13 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   } catch (error) {
     console.error('[API] Project improvement error:', error);
     const mockResponse = getMockResponse('improveProject', body);
-    await recordUsageEvent({
-      userId: authContext.sub,
-      action: 'ai_improve_project',
-      metadata: { mock: true },
-    });
+    if (!isMockMode()) {
+      await recordUsageEvent({
+        userId: authContext.sub,
+        action: 'ai_improve_project',
+        metadata: { mock: true },
+      });
+    }
     return NextResponse.json({
       ...mockResponse,
       notice: 'AI is in mock mode. Add GOOGLE_API_KEY to enable real responses.',
