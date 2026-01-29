@@ -5,13 +5,15 @@
  * Improve a specific resume section using AI
  */
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { withErrorHandler, requireAuthContext, parseJSONBody } from '@/lib/api/middleware';
 import { resumeImprover } from '@/services/ai';
 import { isMockMode, getMockResponse } from '@/services/ai/mocks';
 import type { ParsedJobDescription, ExperienceItem } from '@/types';
 import { buildRateLimitHeaders, checkRateLimit, getRateLimitConfig } from '@/lib/api/rate-limit';
-import { recordUsageEvent } from '@/lib/usage/usage';
 
 const parseYearMonth = (value?: string | null) => {
   if (!value) return null;
@@ -67,6 +69,15 @@ const buildExperienceHighlights = (experience: ExperienceItem[]) => {
  * Improve a specific section of a resume
  */
 export const POST = withErrorHandler(async (request: NextRequest) => {
+  const isBuildPhase =
+    process.env.VERCEL_ENV === 'production' &&
+    process.env.NEXT_PHASE === 'phase-production-build';
+  if (isBuildPhase) {
+    return NextResponse.json({ message: 'Skipping AI during build' }, { status: 200 });
+  }
+
+  const { recordUsageEvent } = await import('@/lib/usage/usage');
+
   const authContext = await requireAuthContext(request);
   const rateLimit = checkRateLimit(
     `ai:improve:${authContext.sub}`,

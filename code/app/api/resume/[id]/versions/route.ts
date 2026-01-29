@@ -5,6 +5,9 @@
  * POST /api/resume/[id]/versions - Create new version
  */
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { withErrorHandler, requireAuth, parseJSONBody } from '@/lib/api/middleware';
 import {

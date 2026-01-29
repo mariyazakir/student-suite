@@ -5,6 +5,9 @@
  * POST /api/resume/[id]/versions/[versionId]/restore - Restore version
  */
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { withErrorHandler, requireAuth } from '@/lib/api/middleware';
 import {

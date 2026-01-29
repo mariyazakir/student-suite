@@ -5,19 +5,30 @@
  * Calculate ATS score for resume against job description
  */
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { withErrorHandler, requireAuthContext, parseJSONBody } from '@/lib/api/middleware';
 import { atsScorer } from '@/services/ai';
 import { isMockMode, getMockResponse } from '@/services/ai/mocks';
 import type { ResumeData, ParsedJobDescription } from '@/types';
 import { buildRateLimitHeaders, checkRateLimit, getRateLimitConfig } from '@/lib/api/rate-limit';
-import { recordUsageEvent } from '@/lib/usage/usage';
 
 /**
  * POST /api/scoring/ats
  * Calculate ATS score
  */
 export const POST = withErrorHandler(async (request: NextRequest) => {
+  const isBuildPhase =
+    process.env.VERCEL_ENV === 'production' &&
+    process.env.NEXT_PHASE === 'phase-production-build';
+  if (isBuildPhase) {
+    return NextResponse.json({ message: 'Skipping AI during build' }, { status: 200 });
+  }
+
+  const { recordUsageEvent } = await import('@/lib/usage/usage');
+
   const authContext = await requireAuthContext(request);
   const rateLimit = checkRateLimit(
     `scoring:ats:${authContext.sub}`,

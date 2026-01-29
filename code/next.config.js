@@ -5,9 +5,7 @@ const nextConfig = {
       enabled: true,
     },
   },
-  turbopack: {
-    root: __dirname,
-  },
+  // Removed turbopack.root to avoid conflict with Vercel's outputFileTracingRoot
 };
 
 module.exports = nextConfig;

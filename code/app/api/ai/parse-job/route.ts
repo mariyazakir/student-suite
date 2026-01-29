@@ -5,18 +5,29 @@
  * Parse job description and extract structured data
  */
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { withErrorHandler, requireAuthContext, parseJSONBody } from '@/lib/api/middleware';
 import { jobDescriptionParser } from '@/services/ai';
 import { isMockMode, getMockResponse } from '@/services/ai/mocks';
 import { buildRateLimitHeaders, checkRateLimit, getRateLimitConfig } from '@/lib/api/rate-limit';
-import { recordUsageEvent } from '@/lib/usage/usage';
 
 /**
  * POST /api/ai/parse-job
  * Parse job description and extract keywords, skills, etc.
  */
 export const POST = withErrorHandler(async (request: NextRequest) => {
+  const isBuildPhase =
+    process.env.VERCEL_ENV === 'production' &&
+    process.env.NEXT_PHASE === 'phase-production-build';
+  if (isBuildPhase) {
+    return NextResponse.json({ message: 'Skipping AI during build' }, { status: 200 });
+  }
+
+  const { recordUsageEvent } = await import('@/lib/usage/usage');
+
   const authContext = await requireAuthContext(request);
   const rateLimit = checkRateLimit(
     `ai:parse-job:${authContext.sub}`,
