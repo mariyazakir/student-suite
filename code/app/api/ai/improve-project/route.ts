@@ -1,25 +1,18 @@
 /**
  * AI Project Improvement API
- * 
+ *
  * POST /api/ai/improve-project
- * Improve a project section using AI
  */
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { withErrorHandler, requireAuthContext, parseJSONBody } from '@/lib/api/middleware';
-import { projectImprover } from '@/services/ai';
+import { withErrorHandler, parseJSONBody } from '@/lib/api/middleware';
 import { isMockMode, getMockResponse } from '@/services/ai/mocks';
 import type { ParsedJobDescription, Project } from '@/types';
 import { buildRateLimitHeaders, checkRateLimit, getRateLimitConfig } from '@/lib/api/rate-limit';
-import { recordUsageEvent } from '@/lib/usage/usage';
 
-/**
- * POST /api/ai/improve-project
- * Improve a project section
- */
 export const POST = withErrorHandler(async (request: NextRequest) => {
   const isBuildPhase =
     process.env.VERCEL_ENV === 'production' &&
@@ -32,18 +25,29 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     );
   }
 
+  const { requireAuthContext } = await import('@/lib/api/middleware');
+  const { projectImprover } = await import('@/services/ai');
+  const { recordUsageEvent } = await import('@/lib/usage/usage');
+
   const authContext = await requireAuthContext(request);
   const rateLimit = checkRateLimit(
     `ai:improve-project:${authContext.sub}`,
     getRateLimitConfig('ai:improve-project', authContext.tier)
   );
   const rateLimitHeaders = buildRateLimitHeaders(rateLimit);
+
   if (!rateLimit.allowed) {
     return NextResponse.json(
-      { error: { code: 'RATE_LIMIT_EXCEEDED', message: 'Rate limit exceeded. Please wait and try again.' } },
+      {
+        error: {
+          code: 'RATE_LIMIT_EXCEEDED',
+          message: 'Rate limit exceeded. Please wait and try again.',
+        },
+      },
       { status: 429, headers: rateLimitHeaders }
     );
   }
+
   const body = await parseJSONBody<{
     project: Project;
     jobDescription?: ParsedJobDescription;
@@ -51,12 +55,16 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   if (!body.project || !body.project.projectName || !body.project.description) {
     return NextResponse.json(
-      { error: { code: 'VALIDATION_ERROR', message: 'Project name and description are required' } },
+      {
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Project name and description are required',
+        },
+      },
       { status: 400, headers: rateLimitHeaders }
     );
   }
 
-  // Use mock response if in mock mode (no Prisma / recordUsageEvent)
   if (isMockMode()) {
     const mockResponse = getMockResponse('improveProject', body);
     return NextResponse.json(mockResponse, { headers: rateLimitHeaders });
@@ -75,13 +83,16 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       });
     }
 
-    return NextResponse.json({
-      improvedDescription: result.improvedDescription,
-      improvedAchievements: result.improvedAchievements,
-      optimizedTechnologies: result.optimizedTechnologies,
-      keywords: result.keywords,
-      reasoning: result.reasoning,
-    }, { headers: rateLimitHeaders });
+    return NextResponse.json(
+      {
+        improvedDescription: result.improvedDescription,
+        improvedAchievements: result.improvedAchievements,
+        optimizedTechnologies: result.optimizedTechnologies,
+        keywords: result.keywords,
+        reasoning: result.reasoning,
+      },
+      { headers: rateLimitHeaders }
+    );
   } catch (error) {
     console.error('[API] Project improvement error:', error);
     const mockResponse = getMockResponse('improveProject', body);
@@ -92,9 +103,12 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         metadata: { mock: true },
       });
     }
-    return NextResponse.json({
-      ...mockResponse,
-      notice: 'AI is in mock mode. Add GOOGLE_API_KEY to enable real responses.',
-    }, { headers: rateLimitHeaders });
+    return NextResponse.json(
+      {
+        ...mockResponse,
+        notice: 'AI is in mock mode. Add GOOGLE_API_KEY to enable real responses.',
+      },
+      { headers: rateLimitHeaders }
+    );
   }
 });
