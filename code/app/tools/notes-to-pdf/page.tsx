@@ -1038,6 +1038,7 @@ export default function NotesToPdfPage() {
         pageSelector: '[data-export-page]',
         filename: getProjectFilename(),
         format,
+        pageSize: { width: 210, height: 297 },
         debug: { label: 'Notes Export' },
       });
     } catch (error) {
@@ -1910,6 +1911,7 @@ export default function NotesToPdfPage() {
                         >
                           <div
                             ref={setPageSurfaceRef(isActive)}
+                            data-export-unscale
                             className="absolute left-0 top-0 h-full w-full"
                             style={{
                               transform: `translate(${view.offsetX}px, ${view.offsetY}px) scale(${view.scale})`,

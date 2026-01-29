@@ -153,9 +153,13 @@ function preparePageForCapture(
     saveStyle(pageEl, 'overflow');
     saveStyle(pageEl, 'height');
     saveStyle(pageEl, 'min-height');
+    saveStyle(pageEl, 'width');
+    saveStyle(pageEl, 'max-width');
     pageEl.style.setProperty('overflow', 'visible');
     pageEl.style.setProperty('height', `${normalizedPageSize.height}mm`);
     pageEl.style.setProperty('min-height', `${normalizedPageSize.height}mm`);
+    pageEl.style.setProperty('width', `${normalizedPageSize.width}mm`);
+    pageEl.style.setProperty('max-width', `${normalizedPageSize.width}mm`);
   }
 
   return { target, restore };
@@ -202,17 +206,16 @@ export const exportMultiPagePdf = async ({
       const { target, restore } = preparePageForCapture(page, normalizedPageSize);
       try {
         await waitForNextPaint();
-        const rect = target.getBoundingClientRect();
-        const w = Math.max(rect.width, targetWidthPx);
-        const h = Math.max(rect.height, targetHeightPx);
+        const w = Math.ceil(targetWidthPx);
+        const h = Math.ceil(targetHeightPx);
         const canvas = await html2canvas(target, {
           scale: 2,
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff',
           logging: false,
-          windowWidth: Math.ceil(w),
-          windowHeight: Math.ceil(h),
+          windowWidth: w,
+          windowHeight: h,
           scrollX: 0,
           scrollY: 0,
         });
@@ -274,17 +277,16 @@ export const exportMultiPageImages = async ({
       const { target, restore } = preparePageForCapture(page, normalizedPageSize);
       try {
         await waitForNextPaint();
-        const rect = target.getBoundingClientRect();
-        const w = Math.max(rect.width, targetWidthPx);
-        const h = Math.max(rect.height, targetHeightPx);
+        const w = Math.ceil(targetWidthPx);
+        const h = Math.ceil(targetHeightPx);
         const canvas = await html2canvas(target, {
           scale: 2,
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff',
           logging: false,
-          windowWidth: Math.ceil(w),
-          windowHeight: Math.ceil(h),
+          windowWidth: w,
+          windowHeight: h,
           scrollX: 0,
           scrollY: 0,
         });
