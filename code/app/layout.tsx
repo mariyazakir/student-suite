@@ -28,6 +28,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en-US" spellCheck="true" dir="ltr">
+      <head>
+        <meta name="monetag" content="a10f75d607ac8955cd537c2cee690d2c" />
+      </head>
       <body className="antialiased min-h-screen bg-gray-50 text-gray-900 overflow-x-hidden" style={{ direction: 'ltr' }}>
         <AppShell>{children}</AppShell>
       </body>
