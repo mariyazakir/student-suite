@@ -8,7 +8,20 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { getSession } from '@/lib/auth/local-auth';
 
-const PUBLIC_ROUTES = new Set(['/login', '/signup']);
+const PUBLIC_ROUTES = new Set([
+  '/',
+  '/login',
+  '/signup',
+  '/about',
+  '/contact',
+  '/terms',
+  '/privacy',
+  '/disclaimer',
+  '/user-content',
+  '/copyright',
+  '/ads',
+  '/refund',
+]);
 
 export default function AuthGate({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -23,7 +36,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
 
     const session = getSession();
     if (!session) {
-      router.replace('/login');
+      router.replace('/');
       return;
     }
     setReady(true);

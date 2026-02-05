@@ -2,8 +2,8 @@
  * Student Suite Dashboard route
  */
 
-import DashboardPage from '@/app/page';
+import { DashboardContent } from '@/components/landing/DashboardContent';
 
 export default function DashboardRoutePage() {
-  return <DashboardPage />;
+  return <DashboardContent />;
 }
