@@ -30,6 +30,13 @@ export default function RootLayout({
     <html lang="en-US" spellCheck="true" dir="ltr">
       <head>
         <meta name="monetag" content="a10f75d607ac8955cd537c2cee690d2c" />
+        {/* Monetag Multitag */}
+        <script
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="208689"
+          async
+          data-cfasync="false"
+        />
       </head>
       <body className="antialiased min-h-screen bg-gray-50 text-gray-900 overflow-x-hidden" style={{ direction: 'ltr' }}>
         <AppShell>{children}</AppShell>
